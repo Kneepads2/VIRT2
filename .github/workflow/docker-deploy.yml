@@ -1,0 +1,36 @@
+name: CI/CD for Node.js App
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: $(( secrets.ratling ))
+          password: $(( secrets.Nimbus6649 ))
+          
+      - name: Build and push docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ratling/dockerimage:latest
+          
+    deploy:
+      runs-on: ubuntu-latest
+      needs: build-and-push
+      steps:
+        - name: Deploy to server
+          run: |
+            echo "deploying container to production"
+            
+    
